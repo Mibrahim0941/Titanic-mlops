@@ -56,7 +56,7 @@ MIN_ACCURACY = 0.80
 
 MODEL_NAME = "TitanicRandomForest"
 
-ENDPOINT_NAME = "titanic-endpoint"
+ENDPOINT_NAME = "titanic-endpoint-2"
 
 DEPLOYMENT_NAME = "blue"
 
