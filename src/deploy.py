@@ -63,6 +63,8 @@ def deploy_model():
         )
         print(f"Model deployed successfully to endpoint: {ENDPOINT_NAME}")
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         print(f"Deployment failed: {e}")
 
 if __name__ == "__main__":

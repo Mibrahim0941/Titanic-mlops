@@ -4,4 +4,4 @@ mlflow
 feature-engine
 joblib
 boto3
-sagemaker
+sagemaker==2.224.0
