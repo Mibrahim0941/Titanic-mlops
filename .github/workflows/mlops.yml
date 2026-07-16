@@ -1,0 +1,69 @@
+name: MLOps Pipeline
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'data/**'
+      - 'src/**'
+
+jobs:
+  build-train-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Configure AWS Credentials
+        # This step will only succeed if the secrets are added to GitHub!
+        # If they aren't, the deployment script will catch it and 'simulate'.
+        uses: aws-actions/configure-aws-credentials@v2
+        continue-on-error: true
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Train Candidate Model
+        run: |
+          python src/train.py
+
+      - name: Evaluate Model against Production
+        run: |
+          python src/evaluate.py
+
+      - name: Deploy to AWS SageMaker
+        env:
+          MODEL_S3_BUCKET: ${{ secrets.MODEL_S3_BUCKET }}
+          SAGEMAKER_ROLE: ${{ secrets.SAGEMAKER_ROLE }}
+        run: |
+          python src/deploy.py
+
+      - name: Archive MLflow Tracking Data
+        uses: actions/upload-artifact@v3
+        with:
+          name: mlflow-logs
+          path: mlruns/
+          
+      - name: Backup MLflow to S3
+        # If AWS is configured and S3 bucket is known, backup MLflow runs.
+        continue-on-error: true
+        env:
+          MODEL_S3_BUCKET: ${{ secrets.MODEL_S3_BUCKET }}
+        run: |
+          if [ -n "$MODEL_S3_BUCKET" ]; then
+            echo "Backing up MLflow runs to S3..."
+            aws s3 sync mlruns/ s3://$MODEL_S3_BUCKET/mlruns/
+          else
+            echo "MODEL_S3_BUCKET not set, skipping S3 backup."
+          fi

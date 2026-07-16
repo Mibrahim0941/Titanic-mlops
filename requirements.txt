@@ -1,0 +1,7 @@
+pandas
+scikit-learn
+mlflow
+feature-engine
+joblib
+boto3
+sagemaker
