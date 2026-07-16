@@ -14,7 +14,6 @@ from sklearn.metrics import (
 from pipeline import create_pipeline
 
 from config import (
-    MLFLOW_TRACKING_URI,
     TRAIN_DATA,
     NEW_DATA,
     MODEL_DIR,
