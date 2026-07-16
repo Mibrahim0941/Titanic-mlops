@@ -18,8 +18,8 @@ def deploy_model():
     # Compress model for SageMaker (SageMaker expects a tar.gz file)
     model_tar_path = PRODUCTION_MODEL.parent / "model.tar.gz"
     with tarfile.open(model_tar_path, "w:gz") as tar:
-        # SageMaker expects the model file to be at the root of the tar file
-        tar.add(PRODUCTION_MODEL, arcname=PRODUCTION_MODEL.name)
+        # SageMaker's default Scikit-Learn container specifically looks for a file named 'model.joblib'
+        tar.add(PRODUCTION_MODEL, arcname="model.joblib")
     
     print("Model compressed to model.tar.gz")
 
