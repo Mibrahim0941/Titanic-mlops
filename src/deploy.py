@@ -57,7 +57,7 @@ def deploy_model():
         
         print("Creating/Updating Endpoint...")
         predictor = sklearn_model.deploy(
-            instance_type="ml.m5.large",
+            instance_type="ml.t2.medium",
             initial_instance_count=1,
             endpoint_name=ENDPOINT_NAME,
         )
